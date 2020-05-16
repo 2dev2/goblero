@@ -1,6 +1,6 @@
 .idea
 .vscode
-
+goblero.iml
 db/*
 
 # code coverage

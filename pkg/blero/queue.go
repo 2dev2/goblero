@@ -8,13 +8,14 @@ import (
 	"os"
 	"sync"
 
-	"github.com/dgraph-io/badger"
+	"github.com/dgraph-io/badger/v2"
 )
 
 // queueOpts struct
 type queueOpts struct {
 	DBPath string
 	Logger badger.Logger
+	badgerDb *badger.DB
 }
 
 // queue struct
@@ -50,21 +51,28 @@ func (l *badgerLogger) Debugf(format string, a ...interface{}) {
 
 // start Queue
 func (q *queue) start() error {
-	// validate opts
-	if q.opts.DBPath == "" {
-		return errors.New("DBPath is required")
+
+	if q.opts.DBPath == "" && q.opts.badgerDb==nil {
+		return errors.New("DBPath or badger db instance required is required")
 	}
+	if q.opts.badgerDb!=nil{
 
-	// open db
-	badgerOpts := badger.DefaultOptions
-	badgerOpts.Dir = q.opts.DBPath
-	badgerOpts.ValueDir = q.opts.DBPath
-	badgerOpts.Logger = &badgerLogger{}
-	badgerOpts.SyncWrites = true
+	}else {
+		// validate opts
+		if q.opts.DBPath == "" {
+			return errors.New("DBPath is required")
+		}
+		// open db
+		badgerOpts := badger.DefaultOptions
+		badgerOpts.Dir = q.opts.DBPath
+		badgerOpts.ValueDir = q.opts.DBPath
+		badgerOpts.Logger = &badgerLogger{}
+		badgerOpts.SyncWrites = true
 
-	db, err := badger.Open(badgerOpts)
-	if err != nil {
-		return err
+		db, err := badger.Open(badgerOpts)
+		if err != nil {
+			return err
+		}
 	}
 	q.db = db
 
