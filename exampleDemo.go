@@ -1,17 +1,14 @@
 
 package main
-
-
-
 import (
-"flag"
-"fmt"
-"log"
-"os"
-"os/signal"
-"syscall"
-"time"
-"github.com/2dev2/goblero/pkg/blero"
+	"flag"
+	"fmt"
+	"github.com/2dev2/goblero/pkg/blero"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
