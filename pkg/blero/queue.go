@@ -56,14 +56,14 @@ func (q *queue) start() error {
 		return errors.New("DBPath or badger db instance required is required")
 	}
 	if q.opts.badgerDb!=nil{
-
+		q.db=q.opts.badgerDb
 	}else {
 		// validate opts
 		if q.opts.DBPath == "" {
 			return errors.New("DBPath is required")
 		}
 		// open db
-		badgerOpts := badger.DefaultOptions
+		badgerOpts := badger.DefaultOptions(q.opts.DBPath)
 		badgerOpts.Dir = q.opts.DBPath
 		badgerOpts.ValueDir = q.opts.DBPath
 		badgerOpts.Logger = &badgerLogger{}
@@ -73,12 +73,16 @@ func (q *queue) start() error {
 		if err != nil {
 			return err
 		}
+		q.db = db
 	}
-	q.db = db
-
 	// init sequence
-	q.seq, err = db.GetSequence([]byte("standard"), 1000)
-	return err
+	seq, err := q.db.GetSequence([]byte("standard"), 1000)
+	if err!=nil{
+		return err
+	}
+	q.seq=seq
+	return nil
+
 }
 
 // stop Queue and Release resources

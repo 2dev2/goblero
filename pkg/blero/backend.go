@@ -1,6 +1,9 @@
 package blero
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/dgraph-io/badger/v2"
+)
 
 // Blero struct
 type Blero struct {
@@ -9,11 +12,11 @@ type Blero struct {
 }
 
 // New creates new Blero Backend
-func New(dbPath string) *Blero {
+func New(dbPath string,badgerdb *badger.DB) *Blero {
 	bl := &Blero{}
 	pStore := newProcessorsStore()
 	bl.dispatcher = newDispatcher(pStore)
-	bl.queue = newQueue(queueOpts{DBPath: dbPath})
+	bl.queue = newQueue(queueOpts{DBPath: dbPath,badgerDb:badgerdb})
 	return bl
 }
 
